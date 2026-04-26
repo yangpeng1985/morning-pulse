@@ -1,0 +1,46 @@
+# 每日订阅摘要配置文件
+
+logging_level: INFO
+state_db_path: state.db
+output_dir: output
+
+# LLM 配置（目前仅使用 DeepSeek）
+llm:
+  api_type: deepseek          # 已固定为 deepseek
+  # api_key 留空则从环境变量 DEEPSEEK_API_KEY 获取
+  api_key: ""
+  model: deepseek-chat
+  max_tokens: 300
+  temperature: 0.3
+
+# 订阅源列表
+sources:
+  - type: rss
+    name: "卡瓦邦噶！"
+    url: "https://www.kawabangga.com/feed"
+
+#  - type: youtube
+#    name: "TechLinked"
+#    url: "https://www.youtube.com/@TechLinked"
+#    max_results: 5
+
+#  - type: bilibili
+#    name: "科技袁人"
+#    uid: 1788474   # 实际 uid
+
+# 输出报告格式（当前只支持 markdown）
+report:
+  format: markdown
+
+# 报告生成后执行的命令（可选），{file} 将被替换为报告文件路径
+# post_command: "open -a Typora {file}"
+
+# 邮件配置（可选）
+# email:
+#   enabled: true
+#   smtp_host: smtp.gmail.com
+#   smtp_port: 465
+#   from: your_email@gmail.com
+#   to: receiver@example.com
+#   username: your_email@gmail.com
+#   password: "your-app-password"
