@@ -18,6 +18,27 @@ sources:
   - type: rss
     name: "卡瓦邦噶！"
     url: "https://www.kawabangga.com/feed"
+  - type: rss
+    name: "piglei"
+    url: "https://www.piglei.com/feeds/latest/"
+  - type: rss
+    name: "云风"
+    url: "https://blog.codingnow.com/atom.xml"
+  - type: rss
+    name: "yanbin's blog"
+    url: "https://yanbin.blog/index.xml"
+  - type: rss
+    name: "Armin Ronacher"
+    url: "https://lucumr.pocoo.org/feed.xml"
+  - type: rss
+    name: "changchen"
+    url: "https://changchen.me/atom.xml"
+  - type: rss
+    name: "antirez"
+    url: "https://antirez.com/rss"
+  - type: rss
+    name: "jiekun"
+    url: "https://jiekun.dev/posts/index.xml"
 
 #  - type: youtube
 #    name: "TechLinked"
