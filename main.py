@@ -27,7 +27,7 @@ def load_config(config_path: str) -> dict:
     with open(config_path, 'r', encoding='utf-8') as f:
         return yaml.safe_load(f)
 
-def run(config_path: str, test_mode: bool = False):
+def run(config_path: str, test_mode: bool = False, source_types=None):
     config = load_config(config_path)
     setup_logging(level=config.get('logging_level', 'INFO'))
 
@@ -45,6 +45,10 @@ def run(config_path: str, test_mode: bool = False):
     # 收集所有新 item
     all_new_items = []
     sources = config.get('sources', [])
+    if source_types:
+        original_count = len(sources)
+        sources = [s for s in sources if s.get('type', '').lower() in source_types]
+        logging.info(f"来源类型过滤：从 {original_count} 个源中选出 {len(sources)} 个")
 
     for source in sources:
         source_type = source.get('type', '').lower()
@@ -123,8 +127,10 @@ def main():
     parser = argparse.ArgumentParser(description='每日订阅摘要')
     parser.add_argument('--config', default='config.yaml', help='配置文件路径')
     parser.add_argument('--test', action='store_true', help='测试模式，忽略状态记录，每次均获取所有内容')
+    parser.add_argument('--source-type', action='append', dest='source_types',
+                        help='只抓取指定类型的源，可重复使用。例如 --source-type rss --source-type bilibili')
     args = parser.parse_args()
-    run(args.config, test_mode=args.test)
+    run(args.config, test_mode=args.test, source_types=args.source_types)
 
 if __name__ == '__main__':
     main()

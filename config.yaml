@@ -45,9 +45,12 @@ sources:
 #    url: "https://www.youtube.com/@TechLinked"
 #    max_results: 5
 
-#  - type: bilibili
-#    name: "科技袁人"
-#    uid: 1788474   # 实际 uid
+  - type: bilibili
+    name: "多罗西123"
+    uid: "375089647"
+    # 登录 B 站后，打开浏览器 Developer Tools -> Application -> Cookies，复制 .bilibili.com 域下的 SESSDATA 值（只需填写值本身，如 "xxx"）
+    cookie: ""
+    max_retries: 3
 
 # 输出报告格式（当前只支持 markdown）
 report:
