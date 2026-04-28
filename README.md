@@ -6,7 +6,7 @@
 
 - **RSS 源抓取**：支持任意标准 RSS 2.0 / Atom 订阅。
 - **YouTube 频道**（开发中，尚未稳定）。
-- **Bilibili UP 主**（开发中，尚未稳定）。
+- **Bilibili UP 主**（config.yaml中按照注释获取cookie的值并填写是关键）。
 - **DeepSeek 摘要**：调用 DeepSeek Chat API 为每篇文章生成 100-300 字中文摘要。
 - **状态记录**：自动记录已处理条目，避免重复摘要。
 - **测试模式**：`--test` 参数强制全量获取，忽略已有状态，便于调试。
@@ -75,6 +75,10 @@ python main.py --test
 
 # 指定自定义配置文件
 python main.py --config my_config.yaml
+
+# 按来源类型过滤（可重复使用 --source-type，只抓取指定类型的源）
+python main.py --source-type bilibili --test
+python main.py --source-type rss
 ```
 
 ### 7. 查看报告
