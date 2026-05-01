@@ -7,7 +7,7 @@ import logging
 import sys
 import subprocess
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import yaml
 
@@ -77,6 +77,14 @@ def run(config_path: str, test_mode: bool = False, source_types=None):
         else:
             new_items = [it for it in items if not state.has_seen(it.item_id)]
         logging.info(f"{source.get('name', source_type)}: 获取 {len(items)} 条，新增 {len(new_items)} 条")
+
+        # 时间过滤：只保留最近两周内的内容
+        before_filter = len(new_items)
+        cutoff_time = datetime.now() - timedelta(weeks=2)
+        new_items = [it for it in new_items if it.publish_time and it.publish_time >= cutoff_time]
+        skipped = before_filter - len(new_items)
+        if skipped:
+            logging.info(f"时间过滤：跳过 {skipped} 条超过两周的内容")
 
         # 为每个 item 保存源名称
         for it in new_items:
