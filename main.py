@@ -24,6 +24,8 @@ from summarizer import Summarizer
 from reporter import Reporter
 from state import StateStore
 from utils import setup_logging, get_today_str
+import concurrent.futures
+import time
 
 FETCHER_MAP = {
     'rss': rss_fetcher.fetch,
@@ -39,6 +41,7 @@ def run(config_path: str, test_mode: bool = False, source_types=None):
     config = load_config(config_path)
     setup_logging(level=config.get('logging_level', 'INFO'))
 
+    start_time = time.time()
     logging.info("开始执行每日订阅摘要")
     if test_mode:
         logging.info("测试模式：将忽略已有状态，重新获取所有内容。")
@@ -58,42 +61,51 @@ def run(config_path: str, test_mode: bool = False, source_types=None):
         sources = [s for s in sources if s.get('type', '').lower() in source_types]
         logging.info(f"来源类型过滤：从 {original_count} 个源中选出 {len(sources)} 个")
 
-    for source in sources:
-        source_type = source.get('type', '').lower()
-        if source_type not in FETCHER_MAP:
-            logging.warning(f"未知的订阅类型: {source_type}，跳过")
-            continue
+    # 并行抓取所有源
+    with concurrent.futures.ThreadPoolExecutor(max_workers=min(5, len(sources) or 1)) as executor:
+        future_to_source = {}
+        for source in sources:
+            source_type = source.get('type', '').lower()
+            if source_type not in FETCHER_MAP:
+                logging.warning(f"未知的订阅类型: {source_type}，跳过")
+                continue
+            fetcher_func = FETCHER_MAP[source_type]
+            future = executor.submit(fetcher_func, source)
+            future_to_source[future] = source
 
-        fetcher_func = FETCHER_MAP[source_type]
-        try:
-            items = fetcher_func(source)
-        except Exception as e:
-            logging.error(f"抓取 {source.get('name', source_type)} 失败: {e}")
-            continue
+        for future in concurrent.futures.as_completed(future_to_source):
+            source = future_to_source[future]
+            try:
+                items = future.result()
+            except Exception as e:
+                logging.error(f"抓取 {source.get('name', source.get('type',''))} 失败: {e}")
+                continue
 
-        # 过滤已处理的 item（测试模式下不检查状态）
-        if test_mode:
-            new_items = items
-        else:
-            new_items = [it for it in items if not state.has_seen(it.item_id)]
-        logging.info(f"{source.get('name', source_type)}: 获取 {len(items)} 条，新增 {len(new_items)} 条")
+            # 过滤已处理的 item（测试模式下不检查状态）
+            if test_mode:
+                new_items = items
+            else:
+                new_items = [it for it in items if not state.has_seen(it.item_id)]
+            logging.info(f"{source.get('name', source.get('type',''))}: 获取 {len(items)} 条，新增 {len(new_items)} 条")
 
-        # 时间过滤：只保留最近两周内的内容
-        before_filter = len(new_items)
-        cutoff_time = datetime.now() - timedelta(weeks=2)
-        new_items = [it for it in new_items if it.publish_time and it.publish_time >= cutoff_time]
-        skipped = before_filter - len(new_items)
-        if skipped:
-            logging.info(f"时间过滤：跳过 {skipped} 条超过两周的内容")
+            # 时间过滤：只保留最近两周内的内容
+            before_filter = len(new_items)
+            cutoff_time = datetime.now() - timedelta(weeks=2)
+            new_items = [it for it in new_items if it.publish_time and it.publish_time >= cutoff_time]
+            skipped = before_filter - len(new_items)
+            if skipped:
+                logging.info(f"时间过滤：跳过 {skipped} 条超过两周的内容")
 
-        # 为每个 item 保存源名称
-        for it in new_items:
-            it.source_name = source.get('name', source_type)
-        all_new_items.extend(new_items)
+            # 为每个 item 保存源名称
+            src_name = source.get('name', source.get('type',''))
+            for it in new_items:
+                it.source_name = src_name
+            all_new_items.extend(new_items)
 
     if not all_new_items:
         logging.info("没有新的节目，跳过摘要生成和报告输出")
         state.close()
+        logging.info(f"总耗时: {time.time() - start_time:.2f} 秒")
         return
 
     # 生成摘要
@@ -137,7 +149,8 @@ def run(config_path: str, test_mode: bool = False, source_types=None):
             logging.error(f"邮件发送失败: {e}")
 
     state.close()
-    logging.info("每日订阅摘要执行完毕")
+    total_time = time.time() - start_time
+    logging.info(f"总耗时: {total_time:.2f} 秒")
 
 def main():
     parser = argparse.ArgumentParser(description='每日订阅摘要')
