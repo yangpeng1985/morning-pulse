@@ -39,6 +39,42 @@ sources:
   - type: rss
     name: "jiekun"
     url: "https://jiekun.dev/posts/index.xml"
+  - type: rss
+    name: "木鸟杂记"
+    url: "https://www.qtmuniao.com/atom.xml"
+  - type: rss
+    name: "liuyue"
+    url: "https://v3u.cn/sitemap.xml"
+  - type: rss
+    name: "laike9m"
+    url: "https://laike9m.com/blog/rss/"
+  - type: rss
+    name: "liunuxtoy"
+    url: "https://linuxtoy.org/feeds/all.atom.xml"
+  - type: rss
+    name: "manjusaka"
+    url: "https://manjusaka.itscoder.com/atom.xml"
+  - type: rss
+    name: "oldj"
+    url: "https://oldj.net/feed/"
+  - type: rss
+    name: "codechina"
+    url: "https://codechina.org/feed/"
+  - type: rss
+    name: "vimer"
+    url: "http://www.vimer.cn/feeds/"
+  - type: rss
+    name: "keakon"
+    url: "https://www.keakon.net/feed"
+  - type: rss
+    name: "mindhacks"
+    url: "http://mindhacks.cn/feed/"
+  - type: rss
+    name: "feilong"
+    url: "https://feilong.me/feeds/all.atom.xml"
+  - type: rss
+    name: "pythonhunter"
+    url: "https://pythonhunter.org/episodes/feed.xml"
 
 #  - type: youtube
 #    name: "TechLinked"
