@@ -7,6 +7,7 @@ Bilibili UP 主视频抓取器
 import logging
 import time
 import hashlib
+import os
 import urllib.parse
 from typing import List
 from datetime import datetime
@@ -56,7 +57,7 @@ def fetch(source: dict) -> List[Item]:
     if not uid:
         raise ValueError("Bilibili 源必须提供 uid")
 
-    cookie = source.get('cookie', '')          # 可选的 SESSDATA
+    cookie = os.getenv('BILIBILI_SESSDATA', '').strip().strip('"').strip("'")   # 从环境变量读取，不在配置文件中保存
     max_retries = source.get('max_retries', 3)
     logging.info(f"开始抓取 Bilibili UP主 {uid}")
 
@@ -66,8 +67,8 @@ def fetch(source: dict) -> List[Item]:
         'Referer': f'https://space.bilibili.com/{uid}',
     }
     if cookie:
-        headers['Cookie'] = f'SESSDATA={cookie};'
-        logging.debug("使用登录态 Cookie 请求 Bilibili")
+        headers['Cookie'] = f'SESSDATA={cookie}'
+        logging.info("使用登录态 Cookie 请求 Bilibili（Cookie 长度: %d）", len(cookie))
 
     # 带重试的请求
     for attempt in range(max_retries):

@@ -48,8 +48,8 @@ sources:
   - type: bilibili
     name: "多罗西123"
     uid: "375089647"
-    # 登录 B 站后，打开浏览器 Developer Tools -> Application -> Cookies，复制 .bilibili.com 域下的 SESSDATA 值（只需填写值本身，如 "xxx"）
-    cookie: ""
+    # B站Cookie值现在通过 .env 文件中的 BILIBILI_SESSDATA 设置，不再写在配置文件中。
+    # 请在项目根目录创建 .env 文件，并添加：BILIBILI_SESSDATA=你的SESSDATA值
     max_retries: 3
 
 # 输出报告格式（当前只支持 markdown）

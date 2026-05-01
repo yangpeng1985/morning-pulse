@@ -5,3 +5,4 @@ openai
 jinja2   # 可选但未使用，保留以备后续
 httpx
 socksio
+python-dotenv

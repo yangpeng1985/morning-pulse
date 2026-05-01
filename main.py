@@ -11,6 +11,14 @@ from datetime import datetime
 
 import yaml
 
+# 加载 .env 文件中的环境变量，用于存储敏感信息（如 Bilibili Cookie）
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # python-dotenv 未安装，跳过
+    pass
+
 from fetchers import rss_fetcher, youtube_fetcher, bilibili_fetcher
 from summarizer import Summarizer
 from reporter import Reporter
